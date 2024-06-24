@@ -14,11 +14,7 @@ quantitative[['I am less frustrated','I spend less time searching for informatio
 
 means = quantitative.mean().round(1).apply(lambda x: x*10)
 
-print(means)
-print(means.iloc[0:1])
-productivity = means.iloc[0:1]
-sat_wellbeing = means.iloc[1:4]
-efficiency = means.iloc[4:7]
+
 
 def to_percentage(x, pos):
     return f'{int(x)}%'
@@ -27,37 +23,20 @@ formatter = FuncFormatter(to_percentage)
 
 # Define colors for each graph
 colors_productivity = 'skyblue'
-colors_satisfaction_wellbeing = 'lightgreen'
-colors_efficiency = 'salmon'
 
 # Productivity
-fig1, ax1 = plt.subplots(figsize=(16,3))
-ax1.barh(productivity.index, productivity, color=colors_productivity)
+fig1, ax1 = plt.subplots(figsize=(4,4))
+bars = ax1.barh(means.index, means, color=colors_productivity)
 ax1.set_title('Productivity')
 ax1.set_xlim(0, 100)
 ax1.set_xlabel('Mean Score')
-ax1.set_yticklabels(quantitative.columns)
+ax1.set_yticklabels(means.index)
 ax1.xaxis.set_major_formatter(formatter)
 
-# Satisfaction & Wellbeing
-fig2, ax2 = plt.subplots(figsize=(16,4))
-ax2.barh(sat_wellbeing.index, sat_wellbeing, color=colors_satisfaction_wellbeing)
-ax2.set_title('Satisfaction & Wellbeing')
-ax2.set_xlim(0, 100)
-ax2.set_xlabel('Mean Score')
-ax2.set_yticklabels(sat_wellbeing.index)
-ax2.xaxis.set_major_formatter(formatter)
+# Add labels inside or outside the bars based on their width
+for bar in bars:
+    width = bar.get_width()
+    label_x_pos = width if width > 5 else width + 5  # Adjust 5 to a smaller number if your bars are very narrow
+    ax1.text(label_x_pos, bar.get_y() + bar.get_height() / 2, f'{width}%', va='center', color='black' if width > 5 else 'blue')
 
-# Efficiency
-fig3, ax3 = plt.subplots(figsize=(16,6))
-ax3.barh(efficiency.index, efficiency, color=colors_efficiency)
-ax3.set_title('Efficiency')
-ax3.set_xlim(0, 100)
-ax3.set_xlabel('Mean Score')
-ax3.set_yticklabels(efficiency.index)
-ax3.xaxis.set_major_formatter(formatter)
-
-nps = qualitative.iloc[:, 0:1]
-
-
-print(nps.value_counts().sort_index())
+plt.show()
